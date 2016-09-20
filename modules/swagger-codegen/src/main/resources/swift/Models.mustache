@@ -36,12 +36,14 @@ public class Response<T> {
 }
 
 private var once = dispatch_once_t()
-class Decoders {
+public class Decoders {
     static private var decoders = Dictionary<String, ((AnyObject) -> AnyObject)>()
 
-    static func addDecoder<T>(clazz clazz: T.Type, decoder: ((AnyObject) -> T)) {
+    public static func addDecoder<T>(clazz clazz: T.Type, decoder: ((AnyObject) -> T)) {
         let key = "\(T.self)"
-        decoders[key] = { decoder($0) as! AnyObject }
+        if decoders[key] == nil {
+            decoders[key] = { decoder($0) as! AnyObject }
+        }
     }
 
     static func decode<T>(clazz clazz: [T].Type, source: AnyObject) -> [T] {
@@ -65,9 +67,6 @@ class Decoders {
         }
         if T.self is Int64.Type && source is NSNumber {
             return source.longLongValue as! T;
-        }
-        if T.self is NSUUID.Type && source is String {
-            return NSUUID(UUIDString: source as! String) as! T
         }
         if source is T {
             return source as! T
@@ -124,6 +123,20 @@ class Decoders {
                 formatter.dateFormat = format
                 return formatter
             }
+
+            // Decoder for NSUUID
+            Decoders.addDecoder(clazz: NSUUID.self) { (source: AnyObject) -> NSUUID in
+                guard let sourceString = source as? String else {
+                    fatalError("formatter failed to cast \(source) as string")
+                }
+
+                guard let uuid = NSUUID(UUIDString: sourceString) else {
+                    fatalError("formatter failed to parse \(sourceString) as UUID string")
+                }
+
+                return uuid
+            }
+
             // Decoder for NSDate
             Decoders.addDecoder(clazz: NSDate.self) { (source: AnyObject) -> NSDate in
                if let sourceString = source as? String {
