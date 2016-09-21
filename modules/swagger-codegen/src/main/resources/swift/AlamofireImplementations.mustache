@@ -81,100 +81,48 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         if let credential = self.credential {
             request.authenticate(usingCredential: credential)
         }
+        
+        request.validate().response { (request:NSURLRequest?, response:NSHTTPURLResponse?, data:NSData?, error:NSError?) in
 
-        let cleanupRequest = {
+            // remove the manager from the store
             managerStore.removeValueForKey(managerId)
-        }
-
-        let validatedRequest = request.validate()
-
-        switch T.self {
-        case is String.Type:
-            validatedRequest.responseString(completionHandler: { (stringResponse) in
-                cleanupRequest()
-
-                if stringResponse.result.isFailure {
-                    completion(
-                        response: nil,
-                        error: ErrorResponse.Error(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error!)
-                    )
-                    return
-                }
-
-                completion(
-                    response: Response(
-                        response: stringResponse.response!,
-                        body: (stringResponse.result.value ?? "") as! T
-                    ),
-                    error: nil
-                )
-            })
-        case is Void.Type:
-            validatedRequest.responseData(completionHandler: { (voidResponse) in
-                cleanupRequest()
-
-                if voidResponse.result.isFailure {
-                    completion(
-                        response: nil,
-                        error: ErrorResponse.Error(voidResponse.response?.statusCode ?? 500, voidResponse.data, voidResponse.result.error!)
-                    )
-                    return
-                }
-
-                completion(
-                    response: Response(
-                        response: voidResponse.response!,
-                        body: nil
-                    ),
-                    error: nil
-                )
-            })
-        case is NSData.Type:
-            validatedRequest.responseData(completionHandler: { (dataResponse) in
-                cleanupRequest()
-
-                if (dataResponse.result.isFailure) {
-                    completion(
-                        response: nil,
-                        error: ErrorResponse.Error(dataResponse.response?.statusCode ?? 500, dataResponse.data, dataResponse.result.error!)
-                    )
-                    return
-                }
-
-                completion(
-                    response: Response(
-                        response: dataResponse.response!,
-                        body: dataResponse.data as! T
-                    ),
-                    error: nil
-                )
-            })
-        default:
-            validatedRequest.responseJSON(options: .AllowFragments) { response in
-                cleanupRequest()
-
-                if response.result.isFailure {
-                    completion(response: nil, error: ErrorResponse.Error(response.response?.statusCode ?? 500, response.data, response.result.error!))
-                    return
-                }
-
-                if () is T {
-                    completion(response: Response(response: response.response!, body: () as! T), error: nil)
-                    return
-                }
-                if let json: AnyObject = response.result.value {
-                    let body = Decoders.decode(clazz: T.self, source: json)
-                    completion(response: Response(response: response.response!, body: body), error: nil)
-                    return
-                } else if "" is T {
-                    // swagger-parser currently doesn't support void, which will be fixed in future swagger-parser release
-                    // https://github.com/swagger-api/swagger-parser/pull/34
-                    completion(response: Response(response: response.response!, body: "" as! T), error: nil)
-                    return
-                }
-
-                completion(response: nil, error: ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "unreacheable code"])))
+            
+            guard error == nil else {
+                // was a error, stop processing and send error up
+                return completion(response: nil, error: ErrorResponse.Error(response?.statusCode ?? 500, data, error!))
             }
+            
+            // use a tuple to define if the value is valid; nil can be a valid value for void types
+            var body:(Bool, T?) = (false, nil)
+            
+            switch T.self {
+
+            case is String.Type:
+                // use the stringResponseSerializer to parse data
+                let result = Request.stringResponseSerializer().serializeResponse(request, response, data, error).value ?? ""
+                body = (true, result as! T)
+                
+            case is Void.Type:
+                // always return nil
+                body = (true, nil)
+                
+            case is NSData.Type:
+                // already is a NSData, send it along
+                body = (true, data as! T)
+                
+            default:
+                if let result = Request.JSONResponseSerializer(options: .AllowFragments).serializeResponse(request, response, data, error).value {
+                    // use the JSONResponseSerializer to parse data
+                    body = (true, Decoders.decode(clazz: T.self, source: result))
+                }
+            }
+            
+            guard body.0 else {
+                // ensure the data was interpreted
+                return completion(response: nil, error: ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "Could not interpret data"])))
+            }
+            
+            completion(response:Response(response: response!, body: body.1), error: nil)
         }
     }
 
