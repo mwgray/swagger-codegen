@@ -6,7 +6,11 @@
 
 import Alamofire
 
-class AlamofireRequestBuilderFactory: RequestBuilderFactory {
+public class AlamofireRequestBuilderFactory: RequestBuilderFactory {
+    public static var contentSerializers: [String: ResponseSerializer<AnyObject, NSError>] = [
+        "application/json":Request.JSONResponseSerializer(options: .AllowFragments),
+        ]
+
     func getBuilder<T>() -> RequestBuilder<T>.Type {
         return AlamofireRequestBuilder<T>.self
     }
@@ -92,37 +96,39 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 return completion(response: nil, error: ErrorResponse.Error(response?.statusCode ?? 500, data, error!))
             }
             
-            // use a tuple to define if the value is valid; nil can be a valid value for void types
-            var body:(Bool, T?) = (false, nil)
+            var body:T? = nil
             
-            switch T.self {
-
-            case is String.Type:
-                // use the stringResponseSerializer to parse data
-                let result = Request.stringResponseSerializer().serializeResponse(request, response, data, error).value ?? ""
-                body = (true, result as! T)
-                
-            case is Void.Type:
-                // always return nil
-                body = (true, nil)
-                
-            case is NSData.Type:
-                // already is a NSData, send it along
-                body = (true, data as! T)
-                
-            default:
-                if let result = Request.JSONResponseSerializer(options: .AllowFragments).serializeResponse(request, response, data, error).value {
-                    // use the JSONResponseSerializer to parse data
-                    body = (true, Decoders.decode(clazz: T.self, source: result))
+            if let contentTypeString = response?.allHeaderFields["Content-Type"] as? String {
+                if let contentSerializer = AlamofireRequestBuilderFactory.contentSerializers[contentTypeString] {
+                    if let result = contentSerializer.serializeResponse(request, response, data, error).value {
+                        body = Decoders.decode(clazz: T.self, source: result)
+                    }
+                }
+            }
+            else {
+                // no Content-Type provided, try some workarounds
+                switch T.self {
+                    
+                case is String.Type:
+                    // use the stringResponseSerializer to parse data
+                    let result = Request.stringResponseSerializer().serializeResponse(request, response, data, error).value ?? ""
+                    body = result as! T
+                    
+                case is Void.Type:
+                    // always return nil
+                    body = nil
+                    
+                case is NSData.Type:
+                    // already is a NSData, send it along
+                    body = data as! T
+                    
+                default:
+                    // unknown data type
+                    return completion(response: nil, error: ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "Could not interpret data"])))
                 }
             }
             
-            guard body.0 else {
-                // ensure the data was interpreted
-                return completion(response: nil, error: ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "Could not interpret data"])))
-            }
-            
-            completion(response:Response(response: response!, body: body.1), error: nil)
+            completion(response:Response(response: response!, body: body), error: nil)
         }
     }
 
