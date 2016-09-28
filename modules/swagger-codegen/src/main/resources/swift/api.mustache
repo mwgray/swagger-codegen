@@ -25,7 +25,7 @@ public struct {{classname}} {
 
   public class {{operationId}} : HTTPEndpoint {
 
-    public typealias ResultType = {{#returnType}}{{returnType}}{{/returnType}}{{^returnType}}Void{{/returnType}}
+    public typealias ResultType = {{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Empty{{/returnType}}
 
     public static let method = HTTPMethod.{{httpMethod}}
 
@@ -43,6 +43,11 @@ public struct {{classname}} {
     }{{/hasParams}}
   }
 {{/operation}}
+
+  // should not be instantiated
+  private init() {
+
+  }
 }
 {{#swiftUseApiNamespace}}
 }

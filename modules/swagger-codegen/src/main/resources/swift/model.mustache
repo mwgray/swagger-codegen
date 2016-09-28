@@ -8,7 +8,7 @@
 {{#description}}
 
 /** {{description}} */{{/description}}
-public class {{classname}} {
+public struct {{classname}}: Decodable {
 {{#vars}}
 {{#isEnum}}
     public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
@@ -30,7 +30,7 @@ public class {{classname}} {
 {{^unwrapRequired}}
     public init() {}
 {{/unwrapRequired}}
-{{#unwrapRequired}}
+{{#aunwrapRequired}}
     public convenience init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
         self.init(())
 
@@ -38,7 +38,14 @@ public class {{classname}} {
         self.{{name}} = {{name}}
         {{/allVars}}
     }
-{{/unwrapRequired}}
+{{/aunwrapRequired}}
+
+    // Decodable
+    public typealias Source = [String: Any]
+
+    public static func decode(source: Source) throws -> {{classname}} {
+      return {{classname}}()
+    }
 
 }{{/model}}
 {{/models}}
