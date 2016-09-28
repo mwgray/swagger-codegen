@@ -576,6 +576,25 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
     }
 
     @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+        if (operations != null) {
+            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+            for (CodegenOperation operation : ops) {
+                if (operation.returnType == null) {
+                    operation.returnType = "Empty";
+                } else if (operation.returnType.startsWith("[")) {
+                    String rt = operation.returnType;
+                    String newReturnType = "DecodableArray<" + rt.substring(1, rt.length() - 1) + ">";
+                    operation.returnType = newReturnType;
+                }
+            }
+        }
+        return objs;
+    }
+
+
+    @Override
     public String escapeQuotationMark(String input) {
         // remove " to avoid code injection
         return input.replace("\"", "");
