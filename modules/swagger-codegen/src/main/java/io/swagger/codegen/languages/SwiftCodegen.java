@@ -108,7 +108,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
                     "true", "lazy", "operator", "in", "COLUMN", "left", "private", "return", "FILE", "mutating", "protocol",
                     "switch", "FUNCTION", "none", "public", "where", "LINE", "nonmutating", "static", "while", "optional",
                     "struct", "override", "subscript", "postfix", "typealias", "precedence", "var", "prefix", "Protocol",
-                    "required", "right", "set", "Type", "unowned", "weak", "description", "hash")
+                    "required", "right", "set", "Type", "unowned", "weak")
                 );
 
         typeMapping = new HashMap<String, String>();
