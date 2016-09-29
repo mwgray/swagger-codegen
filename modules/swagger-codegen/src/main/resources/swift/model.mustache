@@ -8,44 +8,45 @@
 {{#description}}
 
 /** {{description}} */{{/description}}
-public struct {{classname}}: Decodable {
+public final class {{classname}}: Decodable {
 {{#vars}}
 {{#isEnum}}
-    public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
-        case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
-    }
+  public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
+    case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
+  }
 {{/isEnum}}
 {{/vars}}
 {{#vars}}
 {{#isEnum}}
-    {{#description}}/** {{description}} */
-    {{/description}}public var {{name}}: {{{datatypeWithEnum}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{#required}}!{{/required}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
+  {{#description}}/** {{description}} */
+  {{/description}}public var {{name}}: {{{datatypeWithEnum}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
 {{/isEnum}}
 {{^isEnum}}
-    {{#description}}/** {{description}} */
-    {{/description}}public var {{name}}: {{{datatype}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{#required}}!{{/required}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
+  {{#description}}/** {{description}} */
+  {{/description}}public var {{name}}: {{{datatype}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
 {{/isEnum}}
 {{/vars}}
 
 {{^unwrapRequired}}
-    public init() {}
+  public init() {}
 {{/unwrapRequired}}
-{{#aunwrapRequired}}
-    public convenience init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
-        self.init(())
+{{#unwrapRequired}}
+  public init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
+    {{#allVars}}
+    self.{{name}} = {{name}}
+    {{/allVars}}
+  }
+{{/unwrapRequired}}
 
-        {{#allVars}}
-        self.{{name}} = {{name}}
-        {{/allVars}}
-    }
-{{/aunwrapRequired}}
+  // Decodable
+  public typealias Source = [String: Any]
 
-    // Decodable
-    public typealias Source = [String: Any]
+  public static func decode(source: Source) throws -> {{classname}} {
 
-    public static func decode(source: Source) throws -> {{classname}} {
-      return {{classname}}()
-    }
+    return {{classname}}({{#allVars}}
+      {{name}}:{{#isContainer}}({{/isContainer}}try{{^required}}?{{/required}} source.decode("{{name}}"){{#isContainer}} as DecodableArray<{{containerSubType}}>){{^required}}?{{/required}}.items{{/isContainer}}{{#hasMore}},{{/hasMore}}{{/allVars}}
+    )
+  }
 
 }{{/model}}
 {{/models}}
