@@ -1616,6 +1616,7 @@ public class DefaultCodegen {
         property.baseType = getSwaggerType(p);
 
       	if (p instanceof ArrayProperty) {
+      	    property.containerSubType = getContainerSubType(p);
             property.isContainer = true;
             property.isListContainer = true;
             property.containerType = "array";
@@ -1637,6 +1638,15 @@ public class DefaultCodegen {
             setNonArrayMapProperty(property, type);
         }
         return property;
+    }
+
+    private String getContainerSubType(Property p) {
+        if (p instanceof ArrayProperty) {
+            ArrayProperty ap = (ArrayProperty) p;
+            Property inner = ap.getItems();
+            return getTypeDeclaration(inner);
+        }
+        return "";
     }
 
     /**

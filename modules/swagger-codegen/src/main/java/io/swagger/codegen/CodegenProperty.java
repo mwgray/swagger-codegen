@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class CodegenProperty implements Cloneable {
     public String baseName, complexType, getter, setter, description, datatype, datatypeWithEnum,
-            dataFormat, name, min, max, defaultValue, defaultValueWithParam, baseType, containerType;
+            dataFormat, name, min, max, defaultValue, defaultValueWithParam, baseType, containerType, containerSubType;
 
     public String unescapedDescription;
 
@@ -111,6 +111,7 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((isDateTime == null) ? 0 : isDateTime.hashCode());
         result = prime * result + ((isMapContainer == null) ? 0 : isMapContainer.hashCode());
         result = prime * result + ((isListContainer == null) ? 0 : isListContainer.hashCode());
+        result = prime * result + ((containerSubType == null) ? 0 : containerSubType.hashCode());
         result = prime * result + Objects.hashCode(isInherited);
         result = prime * result + Objects.hashCode(nameInCamelCase);
         result = prime * result + Objects.hashCode(enumName);
