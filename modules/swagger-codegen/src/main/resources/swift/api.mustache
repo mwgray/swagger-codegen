@@ -41,6 +41,16 @@ public struct {{classname}} {
 {{#allParams}}      self.{{paramName}} = {{paramName}}
 {{/allParams}}
     }{{/hasParams}}
+
+    public func parameters() throws -> Parameters? {
+
+{{^hasParams}}      return nil{{/hasParams}}{{#hasParams}}      var parameters = Parameters()
+
+{{#allParams}}      {{^isBodyParam}}parameters.encodeParameter(key:"{{paramName}}", value: {{paramName}}){{/isBodyParam}}{{#isBodyParam}}parameters += {{paramName}}.parameters(){{/isBodyParam}}
+{{/allParams}}
+
+      return parameters{{/hasParams}}
+    }
   }
 {{/operation}}
 

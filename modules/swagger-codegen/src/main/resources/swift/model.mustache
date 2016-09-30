@@ -5,10 +5,9 @@
 // https://github.com/swagger-api/swagger-codegen
 //
 
-{{#description}}
+import Alamofire
 
-/** {{description}} */{{/description}}
-public final class {{classname}}: Decodable {
+public final class {{classname}}: ParameterEncodable, Decodable {
 {{#vars}}
 {{#isEnum}}
   public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
@@ -37,6 +36,16 @@ public final class {{classname}}: Decodable {
     {{/allVars}}
   }
 {{/unwrapRequired}}
+
+  public func parameters() -> Parameters {
+
+    var parameters = Parameters()
+
+{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isEnum}}{{^required}}?{{/required}}.rawValue{{/isEnum}}){{#isArrayModel}}{{^required}}?{{/required}}.map { Parameters.encode($0) }){{/isArrayModel}}
+{{/allVars}}
+
+    return parameters
+  }
 
   // Decodable
   public typealias Source = [String: Any]
