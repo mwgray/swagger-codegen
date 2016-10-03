@@ -41,7 +41,7 @@ public final class {{classname}}: ParameterEncodable, Decodable {
 
     var parameters = Parameters()
 
-{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isEnum}}{{^required}}?{{/required}}.rawValue{{/isEnum}}){{#isArrayModel}}{{^required}}?{{/required}}.map { Parameters.encode($0) }){{/isArrayModel}}
+{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isEnum}}{{^required}}?{{/required}}.rawValue{{/isEnum}}{{#isListContainer}}{{^required}}?{{/required}}.map { Parameters.encode($0) }{{/isListContainer}})
 {{/allVars}}
 
     return parameters
