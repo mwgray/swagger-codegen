@@ -369,6 +369,8 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
             }
             codegenProperty.allowableValues.put("values", swiftEnums);
             codegenProperty.datatypeWithEnum = toEnumName(codegenProperty);
+            allEnums.put(codegenProperty.datatypeWithEnum, values);
+
             //codegenProperty.datatypeWithEnum =
             //    StringUtils.left(codegenProperty.datatypeWithEnum, codegenProperty.datatypeWithEnum.length() - "Enum".length());
  
@@ -593,6 +595,33 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
         return objs;
     }
 
+    public Map<String, List<String>> allEnums = new HashMap<>();
+
+    @Override
+    public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
+        Map<String, Object> result = super.postProcessSupportingFileData(objs);
+
+        List<Object> enums = new ArrayList<>();
+
+        for (Map.Entry<String, List<String>> entry : allEnums.entrySet()) {
+            Map<String, Object> enumObject = new HashMap<>();
+            enumObject.put("name", entry.getKey());
+            List<Object> values = new ArrayList<>();
+
+            for(String enumValue : entry.getValue()) {
+                Map<String, Object> value = new HashMap<>();
+                value.put("name", enumValue);
+                values.add(value);
+            }
+
+            enumObject.put("values", values);
+            enums.add(enumObject);
+        }
+
+        result.put("enums", enums);
+
+        return result;
+    }
 
     @Override
     public String escapeQuotationMark(String input) {
