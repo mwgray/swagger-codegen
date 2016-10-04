@@ -579,15 +579,24 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
         }
     }
 
-    public String toEnumName(CodegenProperty property) {
-        String enumName = toModelName(property.name);
+    HashMap<String, String> enumMappings = new HashMap<String, String>() {{
+        put("ADM_APNS_GCM_SNS", "PushServiceType");
+        put("Encryption_DigitalSignature", "AuthKeyKind");
+        put("HS256_HS384_HS512_RS256_RS384_RS512_AES128_HS256_AES192_HS384_AES256_HS512_AES128GCM_AES192GCM_AES256GCM", "EncryptionType");
+        put("Read_ReadWrite", "UserPermissions");
+        put("Admin_Tenant_Account", "UserRole");
+    }};
 
-        // TODO: toModelName already does something for names starting with number, so this code is probably never called
-        if (enumName.matches("\\d.*")) { // starts with number
-            return "_" + enumName;
-        } else {
-            return enumName;
+    @Override
+    public String toEnumName(CodegenProperty property) {
+
+        if(property._enum != null) {
+            String combinedValues = String.join("_", property._enum);
+
+            return enumMappings.containsKey(combinedValues) ? enumMappings.get(combinedValues) : combinedValues;
         }
+
+        return super.toEnumName(property);
     }
 
     @Override
