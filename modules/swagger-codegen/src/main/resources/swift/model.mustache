@@ -10,13 +10,6 @@ import Alamofire
 public final class {{classname}}: ParameterEncodable, Decodable {
 {{#vars}}
 {{#isEnum}}
-  public enum {{datatypeWithEnum}}: String { {{#allowableValues}}{{#values}}
-    case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
-  }
-{{/isEnum}}
-{{/vars}}
-{{#vars}}
-{{#isEnum}}
   {{#description}}/** {{description}} */
   {{/description}}public let {{name}}: {{{datatypeWithEnum}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
 {{/isEnum}}

@@ -9,19 +9,6 @@ import Alamofire
 
 public struct {{classname}} {
 {{#operation}}
-  {{#allParams}}
-  {{#isEnum}}
-  {{^isContainer}}
-  /**
-   * enum for parameter {{paramName}}
-   */
-  public enum {{{datatypeWithEnum}}}_{{operationId}}: String { {{#allowableValues}}{{#values}}
-    case {{enum}} = "{{raw}}"{{/values}}{{/allowableValues}}
-  }
-
-  {{/isContainer}}
-  {{/isEnum}}
-  {{/allParams}}
 
   public class {{operationId}} : HTTPEndpoint {
 
@@ -34,10 +21,10 @@ public struct {{classname}} {
     public static let headers: [String : String] = [:]
 {{#hasParams}}
 
-{{#allParams}}    public let {{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}
+{{#allParams}}    public let {{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}
 {{/allParams}}
 
-    public init({{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
+    public init({{#allParams}}{{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) {
 {{#allParams}}      self.{{paramName}} = {{paramName}}
 {{/allParams}}
     }{{/hasParams}}
