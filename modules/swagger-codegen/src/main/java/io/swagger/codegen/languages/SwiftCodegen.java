@@ -582,9 +582,9 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
     HashMap<String, String> enumMappings = new HashMap<String, String>() {{
         put("ADM_APNS_GCM_SNS", "PushServiceType");
         put("Encryption_DigitalSignature", "AuthKeyKind");
-        put("HS256_HS384_HS512_RS256_RS384_RS512_AES128_HS256_AES192_HS384_AES256_HS512_AES128GCM_AES192GCM_AES256GCM", "EncryptionType");
-        put("Read_ReadWrite", "UserPermissions");
-        put("Admin_Tenant_Account", "UserRole");
+        put("HS256_HS384_HS512_RS256_RS384_RS512_AES128_HS256_AES192_HS384_AES256_HS512_AES128GCM_AES192GCM_AES256GCM", "AuthKeyType");
+        put("Read_ReadWrite", "SystemPermission");
+        put("Admin_Tenant_Account", "SystemRole");
     }};
 
     @Override

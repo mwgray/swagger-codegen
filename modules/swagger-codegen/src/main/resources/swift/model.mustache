@@ -34,7 +34,7 @@ public final class {{classname}}: ParameterEncodable, Decodable {
 
     var parameters = Parameters()
 
-{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isEnum}}{{^required}}?{{/required}}.rawValue{{/isEnum}}{{#isListContainer}}{{^required}}?{{/required}}.map { Parameters.encode($0) }{{/isListContainer}})
+{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isListContainer}}{{^required}}?{{/required}}.map { Parameters.encode($0) }{{/isListContainer}})
 {{/allVars}}
 
     return parameters
@@ -46,7 +46,7 @@ public final class {{classname}}: ParameterEncodable, Decodable {
   public static func decode(source: Source) throws -> {{classname}} {
 
     return {{classname}}({{#allVars}}
-      {{name}}:{{#isContainer}}({{/isContainer}}try{{^required}}?{{/required}} source.decode("{{name}}"){{#isContainer}} as DecodableArray<{{containerSubType}}>){{^required}}?{{/required}}.items{{/isContainer}}{{#hasMore}},{{/hasMore}}{{/allVars}}
+      {{name}}:{{#isListContainer}}({{/isListContainer}}try{{^required}}?{{/required}} source.decode("{{name}}"){{#isListContainer}} as DecodableArray<{{containerSubType}}>){{^required}}?{{/required}}.items{{/isListContainer}}{{#hasMore}},{{/hasMore}}{{/allVars}}
     )
   }
 
