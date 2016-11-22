@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Export MessageKit Classes" type="BashConfigurationType" factoryName="Bash">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="INTERPRETER_PATH" value="/bin/bash" />
+    <option name="WORKING_DIRECTORY" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modules/swagger-generator/export.sh" />
+    <option name="PARAMETERS" value="" />
+    <module name="" />
+    <envs />
+    <method>
+      <option name="Make" enabled="false" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Generate Swagger For MessagesKit" run_configuration_type="Application" />
+    </method>
+  </configuration>
+</component>
