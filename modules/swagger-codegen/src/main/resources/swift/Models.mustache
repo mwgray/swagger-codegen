@@ -15,12 +15,10 @@ public enum {{name}}: String, StringEnum, Decodable {
     }
   }
 
-  public typealias Source = String
-
-  public static func decode(source: Source) throws -> {{name}} {
-
+  public static func decode(source: Any) throws -> {{name}} {
+    let source = try convert(source) as String
     guard let result = {{name}}(rawValue: source) else {
-      throw DecodingError.unexpectedValueType()
+      throw DecodingError.unexpectedValueType
     }
 
     return result

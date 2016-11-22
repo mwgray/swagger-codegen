@@ -7,7 +7,7 @@
 
 import Alamofire
 
-public final class {{classname}}: ParameterEncodable, Decodable {
+public final class {{classname}}: Encodable, Decodable {
 {{#vars}}
 {{#isEnum}}
   {{#description}}/** {{description}} */
@@ -30,23 +30,21 @@ public final class {{classname}}: ParameterEncodable, Decodable {
   }
 {{/unwrapRequired}}
 
-  public func parameters() -> Parameters {
+  public func encode() -> [String: Any] {
 
-    var parameters = Parameters()
+    var encoded = [String: Any]()
 
-{{#allVars}}    parameters.encodeParameter(key: "{{name}}", value:{{name}}{{#isListContainer}}{{^required}}?{{/required}}.map { Parameters.encode($0) }{{/isListContainer}})
+{{#allVars}}    encoded.encode(key: "{{name}}", value:{{name}})
 {{/allVars}}
 
-    return parameters
+    return encoded
   }
 
   // Decodable
-  public typealias Source = [String: Any]
-
-  public static func decode(source: Source) throws -> {{classname}} {
-
+  public static func decode(source: Any) throws -> {{classname}} {
+    let source = try convert(source) as [String: Any]
     return {{classname}}({{#allVars}}
-      {{name}}:{{#isListContainer}}({{/isListContainer}}try{{^required}}?{{/required}} source.decode("{{name}}"){{#isListContainer}} as DecodableArray<{{containerSubType}}>){{^required}}?{{/required}}.items{{/isListContainer}}{{#hasMore}},{{/hasMore}}{{/allVars}}
+      {{name}}:try source.decode("{{name}}"){{#hasMore}},{{/hasMore}}{{/allVars}}
     )
   }
 
