@@ -4,7 +4,7 @@
     <option name="INTERPRETER_PATH" value="/bin/bash" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="PARENT_ENVS" value="true" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modules/swagger-generator/export.sh" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modules/swagger-generator/CleanupMessagesKitExport.sh" />
     <option name="PARAMETERS" value="" />
     <module name="" />
     <envs />
