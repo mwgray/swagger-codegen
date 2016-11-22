@@ -33,7 +33,7 @@ public struct {{classname}} {
 
 {{^hasParams}}      return nil{{/hasParams}}{{#hasParams}}      var encoded = [String: Any]()
 
-{{#allParams}}      {{^isBodyParam}}encoded.encode(key:"{{paramName}}", value: {{paramName}}){{/isBodyParam}}{{#isBodyParam}}encoded += {{paramName}}.encode(){{/isBodyParam}}
+{{#allParams}}      {{^isBodyParam}}encoded.encode(key: "{{paramName}}", value: {{paramName}}){{/isBodyParam}}{{#isBodyParam}}encoded += {{paramName}}.encode(){{/isBodyParam}}
 {{/allParams}}
 
       return encoded{{/hasParams}}

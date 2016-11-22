@@ -23,7 +23,7 @@ public final class {{classname}}: Encodable, Decodable {
   public init() {}
 {{/unwrapRequired}}
 {{#unwrapRequired}}
-  public init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
+  public init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}? = nil{{/required}}{{/allVars}}) {
     {{#allVars}}
     self.{{name}} = {{name}}
     {{/allVars}}
@@ -34,7 +34,7 @@ public final class {{classname}}: Encodable, Decodable {
 
     var encoded = [String: Any]()
 
-{{#allVars}}    encoded.encode(key: "{{name}}", value:{{name}})
+{{#allVars}}    encoded.encode(key: "{{name}}", value: {{name}})
 {{/allVars}}
 
     return encoded
@@ -44,7 +44,7 @@ public final class {{classname}}: Encodable, Decodable {
   public static func decode(source: Any) throws -> {{classname}} {
     let source = try convert(source) as [String: Any]
     return {{classname}}({{#allVars}}
-      {{name}}:try source.decode("{{name}}"){{#hasMore}},{{/hasMore}}{{/allVars}}
+      {{name}}: try source.decode("{{name}}"){{#hasMore}},{{/hasMore}}{{/allVars}}
     )
   }
 
