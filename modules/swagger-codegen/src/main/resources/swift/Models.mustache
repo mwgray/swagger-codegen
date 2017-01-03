@@ -5,15 +5,12 @@
 //
 
 {{#enums}}
-public enum {{name}}: String, StringEnum, Decodable {
+public enum {{name}}: String, EncodableEnum, Decodable {
 {{#values}}  case {{name}}
 {{/values}}
 
-  public var stringValue: String {
-    get {
-      return rawValue
-    }
-  }
+  public static var values:[Any] { get { return _values } }
+  private static let _values:[{{name}}] = [{{#values}}.{{name}}{{^-last}}, {{/-last}}{{/values}}]
 
   public static func decode(source: Any) throws -> {{name}} {
     let source = try convert(source) as String

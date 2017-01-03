@@ -129,7 +129,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
         typeMapping.put("float", "Float");
         typeMapping.put("number", "Double");
         typeMapping.put("double", "Double");
-        typeMapping.put("object", "AnyObject");
+        typeMapping.put("object", "Decodable");
         typeMapping.put("file", "URL");
         typeMapping.put("binary", "Data");
         typeMapping.put("ByteArray", "Data");
@@ -580,7 +580,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
     }
 
     HashMap<String, String> enumMappings = new HashMap<String, String>() {{
-        put("ADM_APNS_GCM_SNS", "PushServiceType");
+        put("Direct_ADM_APNS_GCM_SNS", "PushServiceType");
         put("Encryption_DigitalSignature", "AuthKeyKind");
         put("HS256_HS384_HS512_RS256_RS384_RS512_AES128_HS256_AES192_HS384_AES256_HS512_AES128GCM_AES192GCM_AES256GCM", "AuthKeyType");
         put("Read_ReadWrite", "SystemPermission");

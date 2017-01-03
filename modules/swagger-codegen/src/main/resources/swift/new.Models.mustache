@@ -1,0 +1,53 @@
+// ModelTests.swift
+
+import XCTest
+@testable import MessagesKit
+import MessagingSecurity
+
+extension ModelTest {
+{{#models}}{{#model}}{{#allVars.0}}
+  public func test{{classname}}ModelFreeForm() {
+    _ = try? runFreeFormTest() as {{classname}}
+  }
+  public func testAccount{{classname}}EncodeDecode() {
+    _ = try? runEncodeDecodeTest() as {{classname}}
+  }
+
+{{/allVars.0}}{{/model}}{{/models}}
+}
+
+let modelClassesToTest = [
+{{#models}}{{#model}}{{#allVars.0}}  {{classname}},
+{{/allVars.0}}{{/model}}{{/models}}
+]
+
+{{#models}}{{#model}}{{#allVars.0}}
+public final class {{classname}}Tests: XCTestCase {
+
+  func testDecodeFreefrom() throws {
+
+    let source = [
+{{#allVars}}      "{{name}}": {{datatype}}.createTestingSourceValue(),
+{{/allVars}}
+    ] as [String:Any]
+
+    let value = try {{classname}}.decode(source:source)
+
+{{#allVars}}    XCTAssertEqual(value.{{name}}, source["{{name}}"] as? {{datatype}}.TestingValueType)
+{{/allVars}}
+  }
+
+  func testEncodeDecode() throws {
+    let original = {{classname}}(
+{{#allVars}}      {{name}}: {{datatype}}.createTestingActualValue(){{^-last}},{{/-last}}
+{{/allVars}}
+    )
+
+    let encoded = original.encode()
+    let decoded = try {{classname}}.decode(source: encoded)
+
+{{#allVars}}    XCTAssertEqual(decoded.{{name}}, original.{{name}})
+{{/allVars}}
+  }
+}
+{{/allVars.0}}{{/model}}{{/models}}
